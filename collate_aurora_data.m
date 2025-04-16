@@ -1,10 +1,19 @@
 function collate_aurora_data
+%
+% COLLATE_AURORA_DATA
+%
+% Code for curating the Aurora-BP Dataset in preparation for the analysis
+% reported in:
+%    Charlton PH et al., 'Determinants of photoplethysmography signal
+%    quality at the wrist'.
+%
 
 fprintf('\n ~~~ Extracting Aurora data ~~~')
 
-protocols = {'oscillometric'}; %, 'auscultatory'};
+% Setup
+protocols = {'oscillometric', 'auscultatory'};
 root_folder = '/Users/petercharlton/Documents/Data/Aurora/';
-max_subjs = inf; %inf; % set to inf to do whole dataset
+max_subjs = inf; % set to inf to do whole dataset
 sigs = {'ekg','ppg','acc_ppg_site'};
 up.pt_data_filename = '/Users/petercharlton/Documents/Data/Aurora/raw_data/participants_delete.txt';
 up.diseases = {'self_report_htn', 'high_blood_pressure','diabetes','arrythmia','previous_stroke','previous_heart_attack','coronary_artery_disease','heart_failure','aortic_stenosis','valvular_heart_disease','other_cv_diseases', 'cvd_meds'};
@@ -16,7 +25,7 @@ for protocol_no = 1 : length(protocols)
 
     % setup paths
     raw_data_folder = [root_folder, 'raw_data', filesep, 'measurements_', curr_protocol, filesep];
-    save_folder = [root_folder, 'conv_data', filesep, curr_protocol, filesep];
+    save_folder = [root_folder, 'conv_data_reproduction', filesep, curr_protocol, filesep];
 
     % identify subjects
     subjs = identify_subjs(raw_data_folder);
