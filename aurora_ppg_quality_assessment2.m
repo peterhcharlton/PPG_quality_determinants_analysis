@@ -164,12 +164,10 @@ if ~exist(up.conv_data_filepath, 'file') || up.redo_extraction
     save(up.conv_data_filepath, 'data');
 
 else
+    
     data = load_extracted_data(up);
     
 end
-
-%% add PP
-data.pp = data.sbp-data.dbp;
 
 end
 
@@ -822,6 +820,7 @@ if ~strcmp(up.protocol, 'oscillometric')
     fprintf('\n   - Only importing BPs where both SBP and DBPs were both within a tolerance of less than %d mmHg between the two observers', tol)
 end
 
+%% SBP and DBP
 [data.sbp, data.dbp] = deal(nan(height(data),1));
 for meas_no = 1 : height(data)
     curr_subj = data.subj_id{meas_no};
@@ -835,6 +834,9 @@ for meas_no = 1 : height(data)
     end
     % leave as nan if the consensus isn't within the tolerance.
 end
+
+%% add PP
+data.pp = data.sbp-data.dbp;
 
 end
 
@@ -1555,7 +1557,7 @@ close all
 %% general settings
 up.protocols = {'oscillometric', 'auscultatory'};
 up.signal_quality_metrics = {'snr','tm_cc','ac_dc_ratio'};
-up.redo_extraction = false; % whether to re-do the extraction of data from the dataset.
+up.redo_extraction = true; % whether to re-do the extraction of data from the dataset.
 up.beat_detector = 'MSPTD';
 up.diseases = {'managed_hypertension', 'unmanaged_hypertension' , 'high_blood_pressure','diabetes','arrythmia','previous_stroke','previous_heart_attack','coronary_artery_disease','heart_failure','aortic_stenosis','valvular_heart_disease','other_cv_diseases'};
 up.alpha = 0.05;  % significance level
