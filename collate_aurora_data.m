@@ -15,7 +15,8 @@ protocols = {'oscillometric', 'auscultatory'};
 root_folder = '/Users/petercharlton/Documents/Data/Aurora/';
 max_subjs = inf; % set to inf to do whole dataset
 sigs = {'ekg','ppg','acc_ppg_site'};
-up.pt_data_filename = '/Users/petercharlton/Documents/Data/Aurora/raw_data/participants_delete.txt';
+%up.pt_data_filename = '/Users/petercharlton/Documents/Data/Aurora/raw_data/participants_delete.txt';
+up.pt_data_filename = '/Users/petercharlton/Documents/Data/Aurora/raw_data/participants.tsv';
 up.diseases = {'self_report_htn', 'high_blood_pressure','diabetes','arrythmia','previous_stroke','previous_heart_attack','coronary_artery_disease','heart_failure','aortic_stenosis','valvular_heart_disease','other_cv_diseases', 'cvd_meds'};
 
 for protocol_no = 1 : length(protocols)
