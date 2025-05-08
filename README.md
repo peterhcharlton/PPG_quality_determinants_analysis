@@ -16,4 +16,5 @@ Take the following steps to reproduce the analysis:
 4. Run `aurora_ppg_quality_assessment2` to perform the analysis. To do so:
    - Set `up.root_data_path` (in the `setup_up` function) to be the same as the `root_folder` specified in step 2 above (e.g. `/Users/petercharlton/Documents/Data/Aurora/`).
    - Set `up.plots_path` (in the `setup_up` function) to a folder where you're happy for the results plots to be saved.
+   - Note that Fig. 1 and 4 of the paper won't be reproduced exactly (they were generated using an old version of the code).
 5. If you wish, you can reproduce Fig. 2 of the paper ('The AC and DC components of the PPG signal') using `ppg_components_plot.m`.
