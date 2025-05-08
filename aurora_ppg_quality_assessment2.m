@@ -164,7 +164,7 @@ if ~exist(up.conv_data_filepath, 'file') || up.redo_extraction
     save(up.conv_data_filepath, 'data');
 
 else
-    
+
     data = load_extracted_data(up);
     
 end
@@ -215,66 +215,66 @@ function report_levels_signal_quality(data, up)
 fprintf('\n\n ~~~~~~~~ ')
 fprintf('\n - Reporting levels of signal quality for %s protocol', up.protocol);
 fprintf('\n ~~~~~~~~ \n')
-%if strcmp(up.protocol, 'oscillometric')
-    % - no participants
-    n_pts = length(unique(data.subj_id));
-    fprintf('\n - %d Participants', n_pts)
 
-    % - recordings per participant
-    [unique_subjs, ~, J]=unique(data.subj_id);
-    occ = histc(J, 1:numel(unique_subjs));
-    no_recs_per_pt = unique(occ);
-    if length(no_recs_per_pt) == 1
-        fprintf('\n - %d recordings per participant:', no_recs_per_pt)
-    else
-        error('this shouldn''t happen')
-    end
-    [unique_activities, ~, J]=unique(data.activity);
-    occ = histc(J, 1:numel(unique_activities))./n_pts;
-    for activity_no = 1 : length(unique_activities)
-        fprintf('\n   - %d recordings per participant for %s activity', occ(activity_no), unique_activities{activity_no});
-    end
+% - no participants
+n_pts = length(unique(data.subj_id));
+fprintf('\n - %d Participants', n_pts)
 
-    metrics = {'snr', 'ac_dc_ratio', 'tm_cc'};
+% - recordings per participant
+[unique_subjs, ~, J]=unique(data.subj_id);
+occ = histc(J, 1:numel(unique_subjs));
+no_recs_per_pt = unique(occ);
+if length(no_recs_per_pt) == 1
+    fprintf('\n - %d recordings per participant:', no_recs_per_pt)
+else
+    error('this shouldn''t happen')
+end
+[unique_activities, ~, J]=unique(data.activity);
+occ = histc(J, 1:numel(unique_activities))./n_pts;
+for activity_no = 1 : length(unique_activities)
+    fprintf('\n   - %d recordings per participant for %s activity', occ(activity_no), unique_activities{activity_no});
+end
+
+metrics = {'snr', 'ac_dc_ratio', 'tm_cc'};
+for metric_no = 1 : length(metrics)
+    eval(['rel_data = data.' metrics{metric_no} ';']);
+    fprintf('\n There was a wide range of %s, from %.2f to %.2f.', metrics{metric_no}, min(rel_data), max(rel_data));
+    fprintf('\n   with typical values of %.2f to %.2f.', quantile(rel_data, 0.25), quantile(rel_data, 0.75));
+
+    % create histogram
+    create_histogram(rel_data, metrics{metric_no}, up);
+
+end
+
+% - signal quality at different positions
+%activities = {'standingarmup', 'standingarmdown', 'sittingarmup', 'sittingarmlap', 'sittingarmdown', 'supine'};
+for activity_no = 1 : length(unique_activities)
+    curr_activity = unique_activities{activity_no};
     for metric_no = 1 : length(metrics)
-        eval(['rel_data = data.' metrics{metric_no} ';']);
-        fprintf('\n There was a wide range of %s, from %.2f to %.2f.', metrics{metric_no}, min(rel_data), max(rel_data));
-        fprintf('\n   with typical values of %.2f to %.2f.', quantile(rel_data, 0.25), quantile(rel_data, 0.75));
-
-        % create histogram
-        create_histogram(rel_data, metrics{metric_no}, up);
-
+        [med(activity_no, metric_no), lq(activity_no, metric_no), uq(activity_no, metric_no), ...
+            mu(activity_no, metric_no), sd(activity_no, metric_no), min_val(activity_no, metric_no), max_val(activity_no, metric_no)] ...
+            = print_metric(data, curr_activity, metrics{metric_no});
     end
+end
 
-    % - signal quality at different positions
-    %activities = {'standingarmup', 'standingarmdown', 'sittingarmup', 'sittingarmlap', 'sittingarmdown', 'supine'};
-    for activity_no = 1 : length(unique_activities)
-        curr_activity = unique_activities{activity_no};
-        for metric_no = 1 : length(metrics)
-            [med(activity_no, metric_no), lq(activity_no, metric_no), uq(activity_no, metric_no), ...
-                mu(activity_no, metric_no), sd(activity_no, metric_no), min_val(activity_no, metric_no), max_val(activity_no, metric_no)] ...
-                = print_metric(data, curr_activity, metrics{metric_no});
-        end
-    end
-
-    output_observed_signal_quality_table(metrics, unique_activities, med, lq, uq, mu, sd, up);
+output_observed_signal_quality_table(metrics, unique_activities, med, lq, uq, mu, sd, up);
 
 
-    % assess colinearity
+% assess colinearity
 
-    % extract matrix of data
-    var_data = [];
-    for metric_no = 1 : length(metrics)
-        curr_var = metrics{metric_no};
-        eval(['var_data(:, metric_no) = data.' curr_var ';']);
-    end
+% extract matrix of data
+var_data = [];
+for metric_no = 1 : length(metrics)
+    curr_var = metrics{metric_no};
+    eval(['var_data(:, metric_no) = data.' curr_var ';']);
+end
 
-    % exclude rows with nans
-    var_data = var_data(sum(isnan(var_data),2)==0,:);
+% exclude rows with nans
+var_data = var_data(sum(isnan(var_data),2)==0,:);
 
-    % calculate correlations between variables
-    corrMatrix = corr(var_data);
-    rsquaredMatrix = corrMatrix.^2;
+% calculate correlations between variables
+corrMatrix = corr(var_data);
+rsquaredMatrix = corrMatrix.^2;
 
 end
 
@@ -1555,16 +1555,16 @@ fprintf('\n - Setting up general universal params')
 close all
 
 %% general settings
-up.protocols = {'oscillometric', 'auscultatory'};
+up.protocols = {'auscultatory', 'oscillometric'};
 up.signal_quality_metrics = {'snr','tm_cc','ac_dc_ratio'};
-up.redo_extraction = true; % whether to re-do the extraction of data from the dataset.
+up.redo_extraction = false; % whether to re-do the extraction of data from the dataset.
 up.beat_detector = 'MSPTD';
 up.diseases = {'managed_hypertension', 'unmanaged_hypertension' , 'high_blood_pressure','diabetes','arrythmia','previous_stroke','previous_heart_attack','coronary_artery_disease','heart_failure','aortic_stenosis','valvular_heart_disease','other_cv_diseases'};
 up.alpha = 0.05;  % significance level
 
 % paths
 up.root_data_path = '/Users/petercharlton/Documents/Data/Aurora/';
-up.plots_path = '/Users/petercharlton/Library/CloudStorage/GoogleDrive-peterhcharlton@gmail.com/My Drive/Work/Publications/In Preparation/2024 Determinants wrist PPG signal quality/PLOS DH reformatting 202504/source_files/figures_reproduction/';
+up.plots_path = '/Users/petercharlton/Library/CloudStorage/GoogleDrive-peterhcharlton@gmail.com/My Drive/Work/Publications/In Preparation/2024 Determinants wrist PPG signal quality/PLOS DH reformatting 202505/source_files/figures_reproduction/';
 
 %% Design filters
 fprintf('\n - Designing filters')
