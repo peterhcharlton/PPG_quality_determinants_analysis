@@ -283,21 +283,30 @@ function create_histogram(rel_data, metric_name, up)
 ftsize = 24;
 figure('Position', [20, 20, 700, 400])
 
-histogram(rel_data)
-
-% labels
-set(gca, 'FontSize', ftsize-4, 'YGrid', 'on')
+% labels and histogram setup
 if strcmp(metric_name, 'snr')
-    xlabel('SNR (dB)', 'FontSize', ftsize)
-    xlim([-10 65])
+    xlab_txt = 'SNR (dB)';
+    xlimits = [-10 65];
+    ylims =[0 400];
+    bin_edges = linspace(xlimits(1), xlimits(2), 51);  % 50 bins
 elseif strcmp(metric_name, 'ac_dc_ratio')
-    xlabel('PI (%)', 'FontSize', ftsize)
-    xlim([0 7])
+   xlab_txt = 'PI (%)';
+    xlimits = [0 7];
+    ylims = [0 1400];
+    bin_edges = linspace(xlimits(1), xlimits(2), 51);  % 50 bins
 elseif strcmp(metric_name, 'tm_cc')
-    xlabel('TMCC', 'FontSize', ftsize)
-    xlim([-0.2 1])
+    xlab_txt = 'TMCC';
+    xlimits = [-0.2 1.01];
+    ylims = [0 1700];
+    bin_edges = linspace(xlimits(1), xlimits(2), 51);  % 50 bins
 end
-ylim([0 500])
+
+% plot histogram using fixed bin edges
+histogram(rel_data, 'BinEdges', bin_edges)
+set(gca, 'FontSize', ftsize-4, 'YGrid', 'on')
+
+xlim(xlimits)
+xlabel(xlab_txt, 'FontSize', ftsize)
 ylabel('No. recordings', 'FontSize', ftsize)
 
 % tidy up
@@ -1182,8 +1191,9 @@ end
 
 function save_figure(filepath)
 
-print(filepath, '-depsc');
-print(filepath, '-dpng');
+%print(filepath, '-depsc');
+print(filepath, '-dtiff');
+%print(filepath, '-dpng');
 close all
 
 end
@@ -1564,7 +1574,7 @@ up.alpha = 0.05;  % significance level
 
 % paths
 up.root_data_path = '/Users/petercharlton/Documents/Data/Aurora/';
-up.plots_path = '/Users/petercharlton/Library/CloudStorage/GoogleDrive-peterhcharlton@gmail.com/My Drive/Work/Publications/In Preparation/2024 Determinants wrist PPG signal quality/PLOS DH reformatting 202505/source_files/figures_reproduction/';
+up.plots_path = '/Users/petercharlton/Library/CloudStorage/GoogleDrive-peterhcharlton@gmail.com/My Drive/Work/Publications/In Preparation/2024 Determinants wrist PPG signal quality/PLOS DH reformatting 202506/source_files_plos_template/figures_tiff/';
 
 %% Design filters
 fprintf('\n - Designing filters')
